@@ -1,6 +1,7 @@
 
 var Scrap = require('../src/scrap.js');
 var match = require('match');
+var fs = require('fs');
 
 var battlenet = new Scrap({
 	path: 'http://us.battle.net/',
@@ -12,12 +13,22 @@ var battlenet = new Scrap({
 	ttl: 60 * 3600
 });
 
-battlenet.get('/wow/en/profession/first-aid/recipes', function (file, url) {
+battlenet.get('/wow/en/profession/first-aid/recipes', {type: 'dom'}, function (file, url) {
+	var $ = file.$;
+
+	var urls = []
+	$('.item-link').each(function () {
+		urls.push($(this).attr('href'));
+	});
+
+	console.log(urls);
+	return;
 	var urls = match.all(file, 'a href="(/wow/en/item/[0-9]+)"');
 	var urls = match.all(file, 'url\\("(http:\\/\\/us.media.blizzard.com\\/wow\\/icons\\/[^"]+)"');
 
 	battlenet.get(urls, {type: 'binary'}, function (file, url) {
-		console.log(file, url);
+		console.log(url);
+		fs.writeFileSync(url.replace(/[^a-zA-Z\.]/g, ''), file);
 	});
 
 /*
@@ -32,28 +43,3 @@ battlenet.get('/wow/en/profession/first-aid/recipes', function (file, url) {
 });
 
 
-
-
-
-
-/*
-
-
-var isLogged = false;
-var requests = [];
-
-function get(rq) {
-  requests.push(rq);
-}
-
-function flush() {
-  for (var i = 0; i < requests.length; ++i) {
-    requests[i].handle();
-  }
-}
-
-function login() {
-  real_login(flush)
-}
-
-*/

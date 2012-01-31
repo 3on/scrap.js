@@ -1,5 +1,6 @@
 
 var _ = require('underscore');
+var jsdom = require('jsdom');
 var url = require('url');
 var http = require('http');
 var https = require('https');
@@ -19,12 +20,11 @@ var Request = module.exports = function (session, action, path, options, callbac
 Request.prototype.handle = function () {
 	var that = this;
 
-
 	var urlObj = url.parse(this.path);
 	urlObj.method = this.action;
 	var h = ({'http:': http, 'https:': https})[urlObj.protocol];
 	var req = h.request(urlObj, function (res) {
-		res.setEncoding('utf8');
+//		res.setEncoding('utf8');
 
 		var chunks = [];
 		res.on('data', function (chunk) {
@@ -40,7 +40,17 @@ Request.prototype.handle = function () {
 			} else {
 				data = chunks.join('');
 			}
-			that.callback(data, that.path);
+			if (that.options.type === 'dom') {
+				jsdom.env({
+						html: data,
+						scripts: ['../lib/jquery-1.7.1.min.js']
+					},
+					function (err, data) {
+						that.callback(data, that.path);
+					});
+			} else {
+				that.callback(data, that.path);
+			}
 		});
 	})
 
