@@ -13,7 +13,7 @@ var battlenet = new Scrap({
 	ttl: 60 * 3600
 });
 
-battlenet.get('/wow/en/profession/first-aid/recipes', {type: 'dom'}, function (file, url) {
+battlenet.get('/wow/en/profession/first-aid/recipes', {type: 'html'}, function (file, url) {
 	var $ = file.$;
 
 	var urls = []
