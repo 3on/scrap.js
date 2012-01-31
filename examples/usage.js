@@ -17,7 +17,7 @@ battlenet.get('/wow/en/profession/first-aid/recipes', function (file, url) {
 	var urls = match.all(file, 'url\\("(http:\\/\\/us.media.blizzard.com\\/wow\\/icons\\/[^"]+)"');
 
 	battlenet.get(urls, {type: 'binary'}, function (file, url) {
-		console.log(url);
+		console.log(file, url);
 	});
 
 /*
