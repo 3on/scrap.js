@@ -5,6 +5,8 @@ var http = require('http');
 var https = require('https');
 require('bufferjs/concat');
 
+var Cookies = require('./cookies.js');
+
 var Request = module.exports = function (session, action, path, options, callback) {
 	this.session = session;
 	this.action = action;
@@ -21,7 +23,7 @@ Request.prototype.handle = function () {
 	var urlObj = url.parse(this.path);
 	urlObj.method = this.action;
 	var h = ({'http:': http, 'https:': https})[urlObj.protocol];
-	h.request(urlObj, function (res) {
+	var req = h.request(urlObj, function (res) {
 		res.setEncoding('utf8');
 
 		var chunks = [];
@@ -30,7 +32,8 @@ Request.prototype.handle = function () {
 		});
 
 		res.on('end', function () {
-			console.log(res.headers);
+			Cookies.parse(that.options.cookies, res.headers['set-cookie']);
+
 			var data;
 			if (that.options.type === 'binary') {
 				data = Buffer.concat(chunks);
@@ -39,5 +42,8 @@ Request.prototype.handle = function () {
 			}
 			that.callback(data, that.path);
 		});
-	}).end();
+	})
+
+	req.setHeader('cookies', Cookies.stringify(this.options.cookies));
+	req.end();
 };

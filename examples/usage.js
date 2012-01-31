@@ -1,5 +1,5 @@
 
-var Scrap = require('../src/session.js');
+var Scrap = require('../src/scrap.js');
 var match = require('match');
 
 var battlenet = new Scrap({
