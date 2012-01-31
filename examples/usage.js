@@ -1,27 +1,34 @@
 
 var Session = require('../src/session.js');
+var match = require('match');
 
-var playnet = new Session('http://play-net.net/', {
-  jsdom: true,
-  html5: true,
-  pre_lex: function () {
-
-  },
-  cookies: {},
-  login: function (callback) {
-    this.post('/login', {login: 'dude', password: 12345}, callback);
-  },
-  ttl: 60 * 3600
+var battlenet = new Session({
+	path: 'http://us.battle.net/',
+	type: 'string',
+	cookies: {},
+	login: function (callback) {
+		this.post('/login', {login: 'dude', password: 12345}, callback);
+	},
+	ttl: 60 * 3600
 });
 
-playnet.get('/serverlist.html', function (doc) {
-  var $files = doc.query('a[title="download"]');
-  var files = $files.map(function (element) {
-    return element.attr('href');
-  });
-  playnet.get(files, {}, function (data, filename) {
-    // do something with data
-  });
+battlenet.get('/wow/en/profession/first-aid/recipes', function (file, url) {
+	var urls = match.all(file, 'a href="(/wow/en/item/[0-9]+)"');
+	var urls = match.all(file, 'url\\("(http:\\/\\/us.media.blizzard.com\\/wow\\/icons\\/[^"]+)"');
+
+	battlenet.get(urls, {type: 'binary'}, function (file, url) {
+		console.log(url);
+	});
+
+/*
+	var $files = doc.query('a[title="download"]');
+	var files = $files.map(function (element) {
+	return element.attr('href');
+	});
+	playnet.get(files, {}, function (data, filename) {
+	// do something with data
+	});
+*/
 });
 
 

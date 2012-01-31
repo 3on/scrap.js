@@ -2,7 +2,16 @@
 var _ = require('underscore');
 var Request = require('./request.js');
 
-var Session = module.exports = function () {
+var Session = module.exports = function (options) {
+	this._options = {
+		path: '',
+		cookies: {},
+		type: 'string',
+		login: function () { },
+		ttl: 60 * 3600
+	};
+	_.extend(this._options, options || {});
+
 	this._requests = [];
 };
 
@@ -29,6 +38,8 @@ Session.prototype = {
 	// 'file.txt', function () {}
 	// ['file.txt'], {}, function () {}
 	_parse_requests: function () {
+		var that = this;
+
 		// Action
 		var args = _.toArray(arguments).slice(0);
 		var action = args.shift();
@@ -60,14 +71,15 @@ Session.prototype = {
 		}
 
 		return filenames.map(function (filename) {
-			return new Request(this, action, filename, options, callback)
+			return new Request(that, action, filename, options, callback)
 		})
 	},
 
 	_flush: function () {
-		this._requests.forEach(function (request) {
+		var request;
+		while (request = this._requests.pop()) {
 			request.handle();
-		});
+		}
 	}
 };
 
