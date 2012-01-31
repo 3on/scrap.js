@@ -1,11 +1,11 @@
 
-var Session = require('Session');
+var Session = require('../src/session.js');
 
 var playnet = new Session('http://play-net.net/', {
   jsdom: true,
   html5: true,
   pre_lex: function () {
-    
+
   },
   cookies: {},
   login: function (callback) {
@@ -28,8 +28,8 @@ playnet.get('/serverlist.html', function (doc) {
 
 
 
- 
 
+/*
 
 
 var isLogged = false;
@@ -48,3 +48,5 @@ function flush() {
 function login() {
   real_login(flush)
 }
+
+*/
