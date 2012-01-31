@@ -30,6 +30,7 @@ Request.prototype.handle = function () {
 		});
 
 		res.on('end', function () {
+			console.log(res.headers);
 			var data;
 			if (that.options.type === 'binary') {
 				data = Buffer.concat(chunks);

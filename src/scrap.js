@@ -2,7 +2,7 @@
 var _ = require('underscore');
 var Request = require('./request.js');
 
-var Session = module.exports = function (options) {
+var Scrap = module.exports = function (options) {
 	this._options = {
 		path: '',
 		cookies: {},
@@ -15,7 +15,7 @@ var Session = module.exports = function (options) {
 	this._requests = [];
 };
 
-Session.prototype = {
+Scrap.prototype = {
 	_add_requests: function () {
 		var that = this;
 		var requests = this._parse_requests.apply(this, _.toArray(arguments).slice(0));
@@ -45,7 +45,7 @@ Session.prototype = {
 		var action = args.shift();
 
 		if (args.length == 0) {
-			throw 'Session.js: Invalid arguments';
+			throw 'Scrap.js: Invalid arguments';
 		}
 
 		// Filename(s)
@@ -55,7 +55,7 @@ Session.prototype = {
 		} else if (_.isArray(args[0])) {
 			filenames = args.shift();
 		} else {
-			throw 'Session.js: Invalid arguments';
+			throw 'Scrap.js: Invalid arguments';
 		}
 
 		// Options
@@ -86,7 +86,7 @@ Session.prototype = {
 
 var actions = ['get', 'post', 'put', 'delete'];
 actions.forEach(function (action) {
-	Session.prototype[action] = function () {
+	Scrap.prototype[action] = function () {
 		var args = _.toArray(arguments).slice(0);
 		this._add_requests.apply(this, [action].concat(args));
 	}

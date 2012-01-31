@@ -1,8 +1,8 @@
 
-var Session = require('../src/session.js');
+var Scrap = require('../src/session.js');
 var match = require('match');
 
-var battlenet = new Session({
+var battlenet = new Scrap({
 	path: 'http://us.battle.net/',
 	type: 'string',
 	cookies: {},

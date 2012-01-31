@@ -1,0 +1,24 @@
+{
+	"name": "Scrap",
+	"version": "1.0.0",
+	"description": "Easy way to write a spider.",
+	"keywords": ["spider", "scrap"],
+	"author": {
+		"name": "Vjeux",
+		"email": "vjeuxx@gmail.com",
+		"url": "http://blog.vjeux.com/"
+	},
+	"dependencies": {
+		"underscore": "*",
+		"bufferjs": "*"
+	},
+	"files": [
+		"src/scrap.js",
+		"src/request.js"
+	],
+	"main": "src/scrap.js",
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/3on/scrap.js.git"
+	}
+}
