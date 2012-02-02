@@ -4,20 +4,28 @@ var jsdom = require('jsdom');
 var url = require('url');
 var http = require('http');
 var https = require('https');
+var querystring = require('querystring');
 require('bufferjs/concat');
 var jquery_path = '../lib/jquery-1.7.1.min.js';
-
 var html5 = require('html5')
 var Script = process.binding('evals').Script
+var $ = require('sharedjs');
 
 var Cookies = require('./cookies.js');
 
-var Request = module.exports = function (session, action, path, data, options, callback) {
+var Request = module.exports = function (session, action, path, options, callback) {
 	this.session = session;
 	this.action = action;
-	this.data = data;
 	this.options = {};
-	_.extend(this.options, session._options, options);
+	if (action === 'post') {
+		this.options.headers = {
+			'Content-Type': 'application/x-www-form-urlencoded'
+		};
+	}
+	$.extend(true, this.options, session._options, options);
+	if (this.options.postdata && !_.isString(this.options.postdata)) {
+		this.options.postdata = querystring.stringify(this.options.postdata);
+	}
 	this.path = url.resolve(this.options.path, path);
 	this.callback = callback;
 };
@@ -26,10 +34,9 @@ Request.prototype.handle = function () {
 	var that = this;
 
 	var urlObj = url.parse(this.path);
-	urlObj.method = this.action;
+	urlObj.method = this.action.toUpperCase();
 	var h = ({'http:': http, 'https:': https})[urlObj.protocol];
 	var req = h.request(urlObj, function (res) {
-//		res.setEncoding('utf8');
 
 		var chunks = [];
 		res.on('data', function (chunk) {
@@ -39,12 +46,22 @@ Request.prototype.handle = function () {
 		res.on('end', function () {
 			Cookies.parse(that.options.cookies, res.headers['set-cookie']);
 
+//			console.log(res.headers);
+
+			if (res.headers.location) {
+				that.path = url.resolve(that.options.path, res.headers.location);
+				that.handle();
+				return;
+			}
+
 			var data;
 			if (that.options.type === 'binary') {
 				data = Buffer.concat(chunks);
 			} else {
 				data = chunks.join('');
 			}
+
+			data = that.options.filter(data);
 
 			if (that.options.type === 'html') {
 				jsdom.env({html: data, scripts: [jquery_path]},
@@ -62,11 +79,16 @@ Request.prototype.handle = function () {
 				that.callback(data, that.path);
 			}
 		});
-	})
+	});
 
-	_.each(this.options.headers, function (key, value) {
+	_.each(this.options.headers, function (value, key) {
 		req.setHeader(key, value);
 	});
-	req.setHeader('cookies', Cookies.stringify(this.options.cookies));
+	req.setHeader('Cookie', Cookies.stringify(this.options.cookies));
+
+	if (this.options.postdata) {
+		req.setHeader('Content-Length', this.options.postdata.length);
+		req.write(this.options.postdata);
+	}
 	req.end();
 };

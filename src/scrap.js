@@ -1,16 +1,21 @@
 
 var _ = require('underscore');
 var Request = require('./request.js');
+var $ = require('sharedjs');
 
 var Scrap = module.exports = function (options) {
 	this._options = {
 		path: '',
 		cookies: {},
+		headers: {
+			'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/535.7 (KHTML, like Gecko) Chrome/16.0.912.77 Safari/535.7'
+		},
+		filter: function (file) { return file; },
 		type: 'string',
 		login: function (callback) { callback(); },
 		ttl: 60 * 3600
 	};
-	_.extend(this._options, options || {});
+	$.extend(true, this._options, options || {});
 
 	this._requests = [];
 };
@@ -58,12 +63,6 @@ Scrap.prototype = {
 			throw 'Scrap.js: Invalid arguments';
 		}
 
-		// Data
-		var data = '';
-		if (args.length > 0 && _.isString(args[0])) {
-			data = args.shift();
-		}
-
 		// Options
 		var options = _.extend({}, this.options);
 		if (args.length > 0 && !_.isFunction(args[0])) {
@@ -77,7 +76,7 @@ Scrap.prototype = {
 		}
 
 		return filenames.map(function (filename) {
-			return new Request(that, action, filename, data, options, callback)
+			return new Request(that, action, filename, options, callback)
 		})
 	},
 

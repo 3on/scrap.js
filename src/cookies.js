@@ -1,11 +1,10 @@
 
 var Cookies = module.exports = {
-	parse: function (cookies, headers) {
-		(headers || []).forEach(function (header) {
-			header.split(';').forEach(function (line) {
-				var parts = line.trim().split('=');
-				cookies[parts[0]] = parts[1];
-			});
+	parse: function (cookies, lines) {
+		(lines || []).forEach(function (line) {
+			line = line.split(';')[0];
+			var parts = line.trim().split('=');
+			cookies[parts[0]] = parts[1];
 		});
 		return cookies;
 	},
