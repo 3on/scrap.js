@@ -7,6 +7,11 @@ Scrapping websites made easy. It handles redirections, cookies, get/post, string
 Examples
 ========
 
+```
+npm install Scrap
+```
+
+
 Download images from Wikipedia front-page
 -----------------------------------------
 
