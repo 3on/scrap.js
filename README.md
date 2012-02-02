@@ -36,6 +36,8 @@ Examples
 Download images from Wikipedia front-page
 -----------------------------------------
 
+This example makes use of jQuery to traverse the page, and shows how to download binary files.
+
 ```coffeescript
 # Create a new Scrap with the base for all the following requests
 wikipedia = new Scrap
@@ -59,4 +61,30 @@ wikipedia.get '/', type: 'html', (window) ->
 
 			# And save it to the disk
 			fs.writeFile 'images/' + basename, file
+```
+
+Download all the excerpts from Wikipedia front-page links
+---------------------------------------------------------
+
+This example shows how to download the page as strings and use regular expressions with [jsMatch](https://github.com/vjeux/jsMatch) to extract meaningful parts.
+
+```coffeescript
+# Create a new Scrap with the base for all the following requests
+wikipedia = new Scrap
+	path: 'http://en.wikipedia.org/'
+
+# Download the front page as string
+wikipedia.get '/', (page) ->
+
+	# Get all the wiki pages using a regex
+	urls = match.all(page, '<a href="(/wiki/[^:"]+)"')
+
+	# Request all the urls at once
+	wikipedia.get urls, (page, url) ->
+
+		# Display useful information from the page
+		console.log
+			url: url
+			title: match(page, '<h1[^>]+>(.*?)<\/h1>')
+			excerpt: match(page, '<p>(.*?)<\/p>').replace(/<[^>]+>/g, '')
 ```
