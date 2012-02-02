@@ -7,13 +7,15 @@ var battlenet = new Scrap({
 	path: 'http://us.battle.net/',
 	type: 'string',
 	cookies: {},
+	headers: {},
+
 	login: function (callback) {
 		this.post('/login', {login: 'dude', password: 12345}, callback);
 	},
 	ttl: 60 * 3600
 });
 
-battlenet.get('/wow/en/profession/first-aid/recipes', {type: 'html'}, function (file, url) {
+battlenet.get('/wow/en/profession/first-aid/recipes', {type: 'html5'}, function (file, url) {
 	var $ = file.$;
 
 	var urls = []

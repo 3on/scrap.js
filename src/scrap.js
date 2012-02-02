@@ -7,7 +7,7 @@ var Scrap = module.exports = function (options) {
 		path: '',
 		cookies: {},
 		type: 'string',
-		login: function () { },
+		login: function (callback) { callback(); },
 		ttl: 60 * 3600
 	};
 	_.extend(this._options, options || {});
@@ -58,6 +58,12 @@ Scrap.prototype = {
 			throw 'Scrap.js: Invalid arguments';
 		}
 
+		// Data
+		var data = '';
+		if (args.length > 0 && _.isString(args[0])) {
+			data = args.shift();
+		}
+
 		// Options
 		var options = _.extend({}, this.options);
 		if (args.length > 0 && !_.isFunction(args[0])) {
@@ -71,7 +77,7 @@ Scrap.prototype = {
 		}
 
 		return filenames.map(function (filename) {
-			return new Request(that, action, filename, options, callback)
+			return new Request(that, action, filename, data, options, callback)
 		})
 	},
 
