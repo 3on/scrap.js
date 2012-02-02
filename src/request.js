@@ -23,11 +23,39 @@ var Request = module.exports = function (session, action, path, options, callbac
 		};
 	}
 	$.extend(true, this.options, session._options, options);
-	if (this.options.postdata && !_.isString(this.options.postdata)) {
-		this.options.postdata = querystring.stringify(this.options.postdata);
+	if (this.options.data && !_.isString(this.options.data)) {
+		this.options.data = querystring.stringify(this.options.data);
 	}
 	this.path = url.resolve(this.options.path, path);
 	this.callback = callback;
+};
+
+Request.prototype.filters = {
+	binary: function (file, callback) {
+		callback(file);
+	},
+
+	string: function (file, callback) {
+		callback(file.toString());
+	},
+
+	html: function (file, callback) {
+		var data = this.options.filter(file.toString());
+		jsdom.env({html: data, scripts: [jquery_path]},
+			function (err, data) {
+				callback(data);
+			}
+		);
+	},
+
+	html5: function (file, callback) {
+		var data = this.options.filter(file.toString());
+		var window = jsdom.jsdom(null, null, {parser: html5}).createWindow();
+		new html5.Parser({document: window.document}).parse(data);
+		jsdom.jQueryify(window, jquery_path, function (window, $) {
+			callback(window);
+		});
+	}
 };
 
 Request.prototype.handle = function () {
@@ -54,30 +82,9 @@ Request.prototype.handle = function () {
 				return;
 			}
 
-			var data;
-			if (that.options.type === 'binary') {
-				data = Buffer.concat(chunks);
-			} else {
-				data = chunks.join('');
-			}
-
-			data = that.options.filter(data);
-
-			if (that.options.type === 'html') {
-				jsdom.env({html: data, scripts: [jquery_path]},
-					function (err, data) {
-						that.callback(data, that.path);
-					}
-				);
-			} else if (that.options.type === 'html5') {
-				var window = jsdom.jsdom(null, null, {parser: html5}).createWindow();
-				new html5.Parser({document: window.document}).parse(data);
-				jsdom.jQueryify(window, jquery_path, function (window, $) {
-					that.callback(window, that.path);
-				});
-			} else {
+			that.filters[that.options.type].call(that, Buffer.concat(chunks), function (data) {
 				that.callback(data, that.path);
-			}
+			});
 		});
 	});
 
@@ -86,9 +93,9 @@ Request.prototype.handle = function () {
 	});
 	req.setHeader('Cookie', Cookies.stringify(this.options.cookies));
 
-	if (this.options.postdata) {
-		req.setHeader('Content-Length', this.options.postdata.length);
-		req.write(this.options.postdata);
+	if (this.options.data) {
+		req.setHeader('Content-Length', this.options.data.length);
+		req.write(this.options.data);
 	}
 	req.end();
 };
