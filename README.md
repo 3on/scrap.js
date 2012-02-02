@@ -1,7 +1,7 @@
 Scrap.js
 ========
 
-Scrapping websites made easy
+Scrapping websites made easy. 
 
 API
 ===
@@ -66,7 +66,7 @@ wikipedia.get '/', type: 'html', (window) ->
 Download all the excerpts from Wikipedia front-page links
 ---------------------------------------------------------
 
-This example shows how to download the page as strings and use regular expressions with [jsMatch](https://github.com/vjeux/jsMatch) to extract meaningful parts.
+This example shows how to download the page as string and use regular expressions with [jsMatch](https://github.com/vjeux/jsMatch) to extract meaningful parts.
 
 ```coffeescript
 # Create a new Scrap with the base for all the following requests
@@ -88,3 +88,5 @@ wikipedia.get '/', (page) ->
 			title: match(page, '<h1[^>]+>(.*?)<\/h1>')
 			excerpt: match(page, '<p>(.*?)<\/p>').replace(/<[^>]+>/g, '')
 ```
+
+Thanks to NodeJS asynchronous download, this example runs 3 times faster than the [same version written synchronously in php](https://gist.github.com/1724677).
