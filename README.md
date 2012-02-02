@@ -1,7 +1,7 @@
 Scrap.js
 ========
 
-Scrapping websites made easy. 
+Scrapping websites made easy. It handles redirections, cookies, get/post, string/binary/dom, jquery ... for you!
 
 
 Examples
