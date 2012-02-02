@@ -3,13 +3,13 @@ Scrap.js
 
 Scrapping websites made easy. It handles redirections, cookies, get/post, string/binary/dom, jquery ... for you!
 
-
-Examples
-========
-
 ```
 npm install Scrap
 ```
+
+
+Examples
+========
 
 
 Download images from Wikipedia front-page
