@@ -55,7 +55,7 @@ wikipedia = new Scrap
 # Download the front page as string
 wikipedia.get '/', (page) ->
 
-	# Get all the wiki pages using a regex
+	# Get all the wiki article links using a regex
 	urls = match.all(page, '<a href="(/wiki/[^:"]+)"')
 
 	# Request all the urls at once
