@@ -1,3 +1,4 @@
+[![build status](https://secure.travis-ci.org/3on/scrap.js.png)](http://travis-ci.org/3on/scrap.js)
 Scrap.js
 ========
 
